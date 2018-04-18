@@ -1,0 +1,10 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+# Allow VPN
+-A INPUT -i {{ ansible_default_ipv4.alias }} -p udp -m udp --sport 500 --dport 500 -j ACCEPT
+-A OUTPUT -o {{ ansible_default_ipv4.alias }} -p udp -m udp --dport 500 -j ACCEPT
+-A INPUT -i {{ ansible_default_ipv4.alias }} -p udp -m udp --sport 4500 --dport 4500 -j ACCEPT
+-A OUTPUT -o {{ ansible_default_ipv4.alias }} -p udp -m udp --dport 4500 -j ACCEPT
+COMMIT

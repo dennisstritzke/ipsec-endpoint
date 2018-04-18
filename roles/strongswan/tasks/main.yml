@@ -1,0 +1,29 @@
+---
+- name: Set debconf selections for iptables-persistent
+  shell: "echo {{ item }} | sudo debconf-set-selections"
+  with_items:
+  - "iptables-persistent iptables-persistent/autosave_v4 boolean true"
+  - "iptables-persistent iptables-persistent/autosave_v6 boolean true"
+
+- name: Assure strongSwan and iptables-persistent are installed
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - strongswan
+  - iptables-persistent
+
+- name: Write ipsec and iptables configuration to machine
+  template:
+    src: "{{ item.template }}"
+    dest: "{{ item.dest }}"
+  with_items:
+  - { template: "ipsec.conf.j2", dest: "/etc/ipsec.conf"}
+  - { template: "ipsec.secrets.j2", dest: "/etc/ipsec.secrets"}
+  - { template: "rules.v4.j2", dest: "/etc/iptables/rules.v4"}
+
+- name: Apply iptables
+  shell: iptables-restore < /etc/iptables/rules.v4
+
+- name: Restart ipsec
+  shell: ipsec restart

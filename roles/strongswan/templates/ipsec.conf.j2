@@ -1,0 +1,19 @@
+conn %default
+  esp=aes256-sha256-modp2048!
+  ike=aes256-sha256-modp2048!
+  ikelifetime=86400s
+  keylife=20m
+  rekeymargin=3m
+  keyingtries=1
+  authby=secret
+  keyexchange=ikev2
+
+conn sample
+  left={{ ansible_default_ipv4.address }}
+  leftsubnet={{ ipsec_subnet }}
+  leftfirewall=yes
+  right={{ hostvars[ipsec_peer]['ansible_default_ipv4']['address'] }}
+  rightsubnet={{ hostvars[ipsec_peer]['ipsec_subnet'] }}
+  auto=start
+  dpdaction=restart
+  closeaction=restart
